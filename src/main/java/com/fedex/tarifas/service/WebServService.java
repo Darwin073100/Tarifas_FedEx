@@ -102,6 +102,7 @@ public class WebServService{
             }
             in.close();
             JSONObject json = XML.toJSONObject(response.toString());
+            System.out.println(json);
             return responseService.llenarTarifa(json);
         } catch (Exception e) {
             System.out.println(e);
