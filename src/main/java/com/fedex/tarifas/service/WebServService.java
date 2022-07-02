@@ -1,7 +1,9 @@
 package com.fedex.tarifas.service;
 import com.fedex.tarifas.entity.QuoteParams;
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.XML;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.io.*;
 import java.net.HttpURLConnection;
@@ -10,8 +12,9 @@ import java.net.URL;
 
 @Service
 public class WebServService{
-
-    public String request(QuoteParams quoteParams){
+    @Autowired
+    private ResponseService responseService;
+    public JSONArray  request(QuoteParams quoteParams){
         final String xml = "<RateRequest xmlns=\"http://fedex.com/ws/rate/v13\">"+
                 "<WebAuthenticationDetail>"+
                 "<UserCredential>"+
@@ -90,7 +93,6 @@ public class WebServService{
             wr.flush();
             wr.close();
             String responseStatus = con.getResponseMessage();
-            System.out.println(responseStatus);
             BufferedReader in = new BufferedReader(new InputStreamReader(
                     con.getInputStream()));
             String inputLine;
@@ -100,12 +102,10 @@ public class WebServService{
             }
             in.close();
             JSONObject json = XML.toJSONObject(response.toString());
-            String jsonString = json.toString(4);
-            System.out.println("response:" + jsonString);
-            return jsonString;
+            return responseService.llenarTarifa(json);
         } catch (Exception e) {
             System.out.println(e);
-            return "Error:: " +e +"  ::"+xml;
+            return null;
         }
     }
 }
